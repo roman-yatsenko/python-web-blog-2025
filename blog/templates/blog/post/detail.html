@@ -3,8 +3,8 @@
 {% block title %}{{ post.title }}{% endblock  %}
 
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <p class="date">
+    <h1 class="border-bottom border-2 pb-2">{{ post.title }}</h1>
+    <p class="fst-italic text-secondary">
         Опубліковано {{ post.publish }} автором {{ post.author }}
     </p>
     {{ post.body|linebreaks }}
