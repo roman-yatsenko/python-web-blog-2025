@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
@@ -40,13 +41,20 @@ def post_detail(request, year, month, day, post):
 def post_share(request, post_id):
     # Отримати пост за id
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    sent = False
     if request.method == 'POST':
         # Форма передана на обробку
         form = EmailPostForm(request.POST)
         if form.is_valid():
             # Поля форми успішно пройшли валідацію
             cd = form.cleaned_data
-            # ... відправити електронного листа
+            # відправити електронного листа
+            post_url = request.build_absolute_uri(post.get_absolute_url())
+            subject = f"{cd['name']} рекомендує Вам прочитати {post.title}"
+            message = f"Прочитай {post.title} за покликанням {post_url}\n\n" \
+                      f"Коментар від {cd['name']}: {cd['comments']}"
+            send_mail(subject, message, 'blog@fake.mail', [cd['to']])
+            sent = True  
     else:
         form = EmailPostForm()
-    return render(request, 'blog/post/share.html', {'post': post, 'form': form})
+    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})

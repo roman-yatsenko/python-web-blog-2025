@@ -8,4 +8,7 @@
         Опубліковано {{ post.publish }} автором {{ post.author }}
     </p>
     {{ post.body|linebreaks }}
+    <p>
+        <a href="{% url 'blog:post_share' post.id %}" class="text-decoration-none">Пошарити пост</a>
+    </p>
 {% endblock content %}
