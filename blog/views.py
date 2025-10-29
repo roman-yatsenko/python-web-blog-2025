@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
+from taggit.models import Tag
 
 from .forms import EmailPostForm, CommentForm
 from .models import Post, Comment
@@ -15,8 +16,12 @@ class PostListView(ListView):
     paginate_by = 3
     template_name = 'blog/post/list.html'
 
-def post_list(request):
+def post_list(request, tag_slug=None):
     post_list = Post.published.all()
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])
     # Посторінкове розбиття з 3 постами на сторінку
     paginator = Paginator(post_list, 3)
     page_number = request.GET.get('page', 1)
@@ -26,7 +31,7 @@ def post_list(request):
         posts = paginator.page(paginator.num_pages)
     except PageNotAnInteger:
         posts = paginator.page(1)
-    return render(request, 'blog/post/list.html', {'posts': posts})
+    return render(request, 'blog/post/list.html', {'posts': posts, 'tag': tag})
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(
@@ -41,8 +46,10 @@ def post_detail(request, year, month, day, post):
     comments = post.comments.filter(active=True)
     # Форма для коментування користувачами
     form = CommentForm()
+    # Список тегів до посту
+    tags = post.tags.all()
     return render(request, 'blog/post/detail.html', 
-                  {'post': post, 'comments': comments, 'form': form})
+                  {'post': post, 'comments': comments, 'form': form, 'tags': tags})
 
 def post_share(request, post_id):
     # Отримати пост за id

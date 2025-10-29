@@ -4,6 +4,14 @@
 
 {% block content %}
     <h1 class="border-bottom border-2 pb-2">{{ post.title }}</h1>
+    {% if tags %}
+        <p>
+            {% for tag in tags %}
+                <a href="{% url 'blog:post_list_by_tag' tag.slug %}" class="text-decoration-none">{{ tag.name }}</a>
+                {% if not forloop.last %}, {% endif %}           
+            {% endfor %}
+        </p>
+    {% endif %}
     <p class="fst-italic text-secondary">
         Опубліковано {{ post.publish }} автором {{ post.author }}
     </p>
