@@ -1,3 +1,5 @@
+{% load blog_tags %}
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -16,6 +18,18 @@
             <div id="sidebar" class="col-4">
                 <h2>Мій блог</h2>
                 <p>Це мій блог</p>
+                <p>Загальна кількість постів - {% total_posts %}</p>
+                <h3>Останні пости</h3>
+                {% show_latest_posts 3 %}
+                <h3>Пости з коментарями</h3>
+                {% get_most_commented_posts as most_commented_posts %}
+                <ul>
+                    {% for post in most_commented_posts %}
+                        <li>
+                            <a href="{{ post.get_absolute_url }}" class="text-decoration-none">{{ post.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
